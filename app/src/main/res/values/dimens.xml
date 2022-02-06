@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="padding">16dp</dimen>
+    <dimen name="bs_pick_height">100dp</dimen>
+    <dimen name="bs_height">350dp</dimen>
+</resources>

@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">tiermobility</string>
+    <string name="title_activity_maps">MapsActivity</string>
+
+    <!-- Errors -->
+    <string name="no.internet">No interent connection</string>
+    <string name="no.location.permission">No location permission</string>
+    <string name="request.location.permisson.button">Settings</string>
+    <string name="server.error">Server error. It is sad :( </string>
+    <string name="retry">Retry</string>
+    <string name="battery">"%1$s \%"</string>
+</resources>
