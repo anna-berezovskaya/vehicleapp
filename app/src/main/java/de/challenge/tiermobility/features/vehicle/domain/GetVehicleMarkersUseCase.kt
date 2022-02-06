@@ -1,4 +1,4 @@
-package de.challenge.tiermobility.features.vehicle.usecase
+package de.challenge.tiermobility.features.vehicle.domain
 
 import de.challenge.api.model.ApiResult
 import de.challenge.api.model.VehicleListResponseData

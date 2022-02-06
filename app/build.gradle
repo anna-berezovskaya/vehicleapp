@@ -48,6 +48,7 @@ dependencies {
     implementation "androidx.constraintlayout:constraintlayout:${versions.constraint}"
 
     implementation "com.google.dagger:hilt-android:${versions.hilt}"
+    implementation "com.google.android.gms:play-services-location:${versions.location}"
     kapt "com.google.dagger:hilt-compiler:${versions.hilt}"
 
     implementation "androidx.activity:activity-ktx:${versions.activityKtx}"

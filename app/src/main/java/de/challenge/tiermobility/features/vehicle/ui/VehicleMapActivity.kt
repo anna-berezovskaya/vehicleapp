@@ -1,6 +1,7 @@
 package de.challenge.tiermobility.features.vehicle.ui
 
 import android.Manifest
+import android.location.Location
 import android.os.Bundle
 import android.view.View
 import androidx.activity.result.ActivityResultLauncher
@@ -8,6 +9,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -53,6 +55,7 @@ class VehicleMapActivity : AppCompatActivity(), OnMapReadyCallback {
         super.onResume()
         if (PermissionUtils.hasLocationPermission(applicationContext)) {
             viewModel.updateLocationPermission(true)
+            getCurrentLocation()
         }
 
         if (!PermissionUtils.hasLocationPermission(applicationContext)
@@ -81,7 +84,9 @@ class VehicleMapActivity : AppCompatActivity(), OnMapReadyCallback {
                 false
             ) || permissions.getOrDefault(Manifest.permission.ACCESS_COARSE_LOCATION, false)
             viewModel.updateLocationPermission(granted)
-
+            if (granted) {
+                getCurrentLocation()
+            }
         }
     }
 
@@ -94,15 +99,36 @@ class VehicleMapActivity : AppCompatActivity(), OnMapReadyCallback {
         )
     }
 
-    private fun updateMap(data: List<VehicleMarker>?, closestIndex: Int) {
-        data?.forEach { vehicleMarker ->
+    private fun getCurrentLocation() {
+        val fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+        try {
+            fusedLocationClient.lastLocation
+                .addOnSuccessListener { location: Location? ->
+                    viewModel.updateLocation(location)
+                }
+                .addOnCanceledListener { viewModel.updateLocation(null) }
+        } catch (e: SecurityException) {
+            viewModel.updateLocationPermission(false)
+        }
+
+
+    }
+
+    private fun updateMap(data: List<VehicleMarker>?) {
+        data?.forEachIndexed { index, vehicleMarker ->
             val position = LatLng(vehicleMarker.latitude, vehicleMarker.longitude)
             val marker =
                 map.addMarker(MarkerOptions().position(position).title(vehicleMarker.vehicle.model))
+            marker?.tag = index
             marker?.let { markers.add(marker) }
-            markers.getOrNull(closestIndex)?.let {
+            markers.getOrNull(0)?.let {
                 it.showInfoWindow()
                 map.moveCamera(CameraUpdateFactory.newLatLngZoom(it.position, 15f))
+            }
+            map.setOnMarkerClickListener { marker ->
+                val index = marker.tag as? Int
+                index?.let{updateBottomSheet(viewModel.vehicleMarkers?.getOrNull(it)?.vehicle)}
+                false
             }
         } ?: map.clear()
     }
@@ -113,7 +139,7 @@ class VehicleMapActivity : AppCompatActivity(), OnMapReadyCallback {
                 binding.bottomSheet.loadingProgress.visibility = View.GONE
                 binding.bottomSheet.error.visibility = View.GONE
                 binding.bottomSheet.retry.visibility = View.GONE
-                updateMap(uiState.data, 0)
+                updateMap(uiState.data)
                 updateBottomSheet(uiState.data[0].vehicle)
             }
 

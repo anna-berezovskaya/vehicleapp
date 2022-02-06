@@ -1,11 +1,13 @@
 package de.challenge.tiermobility.features.vehicle.viewmodel
 
+import android.location.Location
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import de.challenge.api.model.ApiResult
+import de.challenge.tiermobility.features.vehicle.domain.GetVehicleMarkersUseCase
+import de.challenge.tiermobility.features.vehicle.domain.VehicleMarkerSortHelper
 import de.challenge.tiermobility.features.vehicle.model.VehicleMarker
-import de.challenge.tiermobility.features.vehicle.usecase.GetVehicleMarkersUseCase
 import de.challenge.tiermobility.ui.UiState
 import de.challenge.tiermobility.ui.ViewError
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,26 +17,27 @@ import javax.inject.Inject
 
 @HiltViewModel
 class VehicleMapViewModel @Inject constructor(
-    private val getVehicleMarkersUseCase: GetVehicleMarkersUseCase
+    private val getVehicleMarkersUseCase: GetVehicleMarkersUseCase,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<UiState<List<VehicleMarker>>>(UiState.Loading())
     val uiState: StateFlow<UiState<List<VehicleMarker>>> = _uiState
 
     private var locationPermissionGranted = false
-
-    init {
-        loadData()
-    }
+    private var location: Location? = null
+    var vehicleMarkers : List<VehicleMarker>? = null
+    private set
 
     fun updateLocationPermission(isGranted: Boolean) {
-        val oldValue = locationPermissionGranted
         locationPermissionGranted = isGranted
-        if (!oldValue && locationPermissionGranted) {
-            loadData()
-        } else if (!locationPermissionGranted) {
+        if (!locationPermissionGranted) {
             _uiState.value = UiState.Error(ViewError.NoLocationPermission)
         }
+    }
+
+    fun updateLocation(location: Location?) {
+        this.location = location
+        loadData()
     }
 
     fun loadData() {
@@ -52,7 +55,11 @@ class VehicleMapViewModel @Inject constructor(
                     }
                 }
                 is ApiResult.Success -> {
-                    _uiState.emit(UiState.Data(result.result))
+                    val list = result.result
+                    val sortedList =
+                        location?.let { VehicleMarkerSortHelper.sortByDistance(list, it) } ?: list
+                    vehicleMarkers = sortedList
+                    _uiState.emit(UiState.Data(sortedList))
                 }
             }
         }
