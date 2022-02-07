@@ -11,7 +11,7 @@ ext.versions = [
         coreKtx           : "1.7.0",
 
         //coroutines
-        coroutines        : "1.5.2",
+        coroutines        : "1.6.0",
 
         //OkHttp
         okHttp            : "4.9.3",

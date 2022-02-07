@@ -1,46 +1,60 @@
 package de.challenge.tiermobility.features.vehicle.model
 
+import de.challenge.api.model.NetworkingError
 import de.challenge.api.model.VehicleListResponse
 import de.challenge.api.model.VehicleListResponseData
 import de.challenge.api.model.VehicleResponse
 import de.challenge.tiermobility.features.vehicle.model.VehicleListMapper.map
-import de.challenge.tiermobility.mappers.Mapper
+
+interface Mapper<I, O> {
+    fun map(i: I): O
+}
 
 /**
  * mappers transform values to view-readable format and
  * also doing basic sanity check, filtering our malformed or empty objects
  */
 object VehicleListMapper : Mapper<VehicleListResponse, List<VehicleMarker>> {
-    override fun VehicleListResponse.map(): List<VehicleMarker> {
+    override fun map(response: VehicleListResponse): List<VehicleMarker> {
         val list = mutableListOf<VehicleMarker>()
-        this.current?.mapNotNullTo(list) { response -> with(VehicleMarkerMapper) { response.map() } }
+        response.current?.mapNotNullTo(list) { resp -> VehicleMarkerMapper.map(resp) }
         return list.toList()
     }
 
 }
 
 object VehicleListResponseDataMapper : Mapper<VehicleListResponseData, List<VehicleMarker>> {
-    override fun VehicleListResponseData.map(): List<VehicleMarker> {
-        return this.vehicleListResponse.map()
+    override fun map(data: VehicleListResponseData): List<VehicleMarker> {
+        return map(data.vehicleListResponse)
     }
 }
 
 object VehicleMarkerMapper : Mapper<VehicleResponse, VehicleMarker?> {
-    override fun VehicleResponse.map(): VehicleMarker? {
-        val vehicle = with(VehicleMapper) { map() }
-        val id = this.id
-        val longitude = this.longitude?.toDoubleOrNull()
-        val latitude = this.latitude?.toDoubleOrNull()
+    override fun map(vehicleResponse: VehicleResponse): VehicleMarker? {
+        val vehicle = VehicleMapper.map(vehicleResponse)
+        val id = vehicleResponse.id
+        val longitude = vehicleResponse.longitude?.toDoubleOrNull()
+        val latitude = vehicleResponse.latitude?.toDoubleOrNull()
         return if (id == null || vehicle == null || longitude == null || latitude == null) null else
             VehicleMarker(id, latitude, longitude, vehicle)
     }
 }
 
 object VehicleMapper : Mapper<VehicleResponse, Vehicle?> {
-    override fun VehicleResponse.map(): Vehicle? {
-        val id = this.id
+    override fun map(i: VehicleResponse): Vehicle? {
+        val id = i.id
         return if (id == null) null
-        else Vehicle(id, this.zoneId, this.battery, this.resolution, this.model)
+        else Vehicle(id, i.zoneId, i.battery, i.resolution, i.model)
     }
 
+}
+
+object ErrorMapper : Mapper<NetworkingError, ViewError> {
+    override fun map(i: NetworkingError): ViewError =
+        when (i) {
+            is NetworkingError.NetworkError -> ViewError.NoInternet
+            is NetworkingError.ServerError -> ViewError.SourceError
+            is NetworkingError.Unknown -> ViewError.SourceError
+
+        }
 }

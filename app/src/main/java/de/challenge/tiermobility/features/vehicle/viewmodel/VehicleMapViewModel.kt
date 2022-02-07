@@ -6,11 +6,11 @@ import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
 import de.challenge.api.model.ApiResult
-import de.challenge.tiermobility.features.vehicle.domain.GetVehicleMarkersUseCase
 import de.challenge.tiermobility.features.vehicle.model.LocationStatus
 import de.challenge.tiermobility.features.vehicle.model.VehicleMarker
+import de.challenge.tiermobility.features.vehicle.model.ViewError
+import de.challenge.tiermobility.features.vehicle.repository.VehicleMarkersRepo
 import de.challenge.tiermobility.ui.UiState
-import de.challenge.tiermobility.ui.ViewError
 import de.challenge.tiermobility.ui.toLocation
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -19,7 +19,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class VehicleMapViewModel @Inject constructor(
-    private val getVehicleMarkersUseCase: GetVehicleMarkersUseCase,
+    private val vehiclesRepo: VehicleMarkersRepo,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<UiState<List<VehicleMarker>>>(UiState.Loading())
@@ -45,7 +45,7 @@ class VehicleMapViewModel @Inject constructor(
     fun updateLocationStatus(locationStatus: LocationStatus) {
         location = locationStatus
         if (!locationStatus.locationGranted) {
-            _uiState.value = UiState.Error(ViewError.NoLocationPermission)
+            _uiState.value = UiState.NoLocationPermission()
         } else {
             loadData()
         }
@@ -56,14 +56,14 @@ class VehicleMapViewModel @Inject constructor(
             if (vehicleMarkers == null) {
                 _uiState.emit(UiState.Loading())
                 if (location?.locationGranted != true) {
-                    _uiState.emit(UiState.Error(ViewError.NoLocationPermission))
+                    _uiState.emit(UiState.NoLocationPermission())
                     return@launch
                 }
-                when (val result = getVehicleMarkersUseCase.run()) {
+                when (val result = vehiclesRepo.getVehicles()) {
                     is ApiResult.Failure -> {
-                        when (val error = result.error) {
-                            is ViewError -> _uiState.emit(UiState.Error(error))
-                            else -> _uiState.emit(UiState.Error(ViewError.ServerError))
+                        when (result.error){
+                            is ViewError.NoInternet -> _uiState.emit(UiState.NoInternet())
+                            else -> _uiState.emit(UiState.ServerError())
                         }
                     }
                     is ApiResult.Success -> {
@@ -85,9 +85,7 @@ class VehicleMapViewModel @Inject constructor(
                 }
             }
             vehicleMarkers?.let { _uiState.emit(UiState.Data(it)) } ?: _uiState.emit(
-                UiState.Error(
-                    ViewError.ServerError
-                )
+                UiState.ServerError()
             )
         }
     }

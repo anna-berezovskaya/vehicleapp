@@ -5,7 +5,7 @@ import de.challenge.api.model.NetworkingError
 import retrofit2.Response
 import java.io.IOException
 
-interface ResponseMapper {
+interface ResponseMapper  {
     fun <T> Response<T>.mapResult(): ApiResult<T>
 }
 

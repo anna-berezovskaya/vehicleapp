@@ -25,9 +25,7 @@ import de.challenge.tiermobility.features.vehicle.model.Vehicle
 import de.challenge.tiermobility.features.vehicle.model.VehicleMarker
 import de.challenge.tiermobility.features.vehicle.viewmodel.VehicleMapViewModel
 import de.challenge.tiermobility.ui.UiState
-import de.challenge.tiermobility.ui.ViewError
 import de.challenge.tiermobility.utils.PermissionUtils
-import kotlinx.coroutines.flow.collect
 
 
 @AndroidEntryPoint
@@ -153,37 +151,37 @@ class VehicleMapActivity : AppCompatActivity(), OnMapReadyCallback {
                 updateBottomSheet(uiState.data[0].vehicle)
             }
 
-            is UiState.Error -> {
+            is UiState.NoLocationPermission -> {
                 updateBottomSheet(null)
                 binding.bottomSheet.loadingProgress.visibility = View.GONE
-                binding.bottomSheet.error.text = ""
                 binding.bottomSheet.error.visibility = View.VISIBLE
                 binding.bottomSheet.retry.setOnClickListener(null)
-
-                when (uiState.viewError) {
-                    is ViewError.NoLocationPermission -> {
-                        binding.bottomSheet.retry.visibility = View.GONE
-                        binding.bottomSheet.error.text = getString(R.string.no_location_permission)
-                    }
-                    is ViewError.ServerError -> {
-                        binding.bottomSheet.retry.visibility = View.VISIBLE
-                        binding.bottomSheet.retry.setOnClickListener {
-                            viewModel.loadData()
-                        }
-                        binding.bottomSheet.error.text = getString(R.string.server_error)
-                        binding.bottomSheet.retry.text = getString(R.string.retry)
-                    }
-
-                    is ViewError.NoInternet -> {
-                        binding.bottomSheet.retry.visibility = View.VISIBLE
-                        binding.bottomSheet.retry.setOnClickListener {
-                            viewModel.loadData()
-                        }
-                        binding.bottomSheet.error.text = getString(R.string.no_internet)
-                        binding.bottomSheet.retry.text = getString(R.string.retry)
-                    }
-                }
+                binding.bottomSheet.retry.visibility = View.GONE
+                binding.bottomSheet.error.text = getString(R.string.no_location_permission)
             }
+
+            is UiState.ServerError -> {
+                updateBottomSheet(null)
+                binding.bottomSheet.loadingProgress.visibility = View.GONE
+                binding.bottomSheet.error.visibility = View.VISIBLE
+                binding.bottomSheet.retry.visibility = View.VISIBLE
+                binding.bottomSheet.retry.setOnClickListener {
+                    viewModel.loadData()
+                }
+                binding.bottomSheet.error.text = getString(R.string.server_error)
+                binding.bottomSheet.retry.text = getString(R.string.retry)
+            }
+            is UiState.NoInternet -> {
+                binding.bottomSheet.loadingProgress.visibility = View.GONE
+                binding.bottomSheet.error.visibility = View.VISIBLE
+                binding.bottomSheet.retry.visibility = View.VISIBLE
+                binding.bottomSheet.retry.setOnClickListener {
+                    viewModel.loadData()
+                }
+                binding.bottomSheet.error.text = getString(R.string.no_internet)
+                binding.bottomSheet.retry.text = getString(R.string.retry)
+            }
+
             is UiState.Loading -> {
                 updateBottomSheet(null)
                 binding.bottomSheet.loadingProgress.visibility = View.VISIBLE
