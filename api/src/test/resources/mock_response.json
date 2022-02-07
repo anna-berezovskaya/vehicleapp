@@ -1,0 +1,36 @@
+{
+  "data": {
+    "current": [
+      {
+        "id": "6348dfa0-1b20-40ed-98e9-fe9e232b6105",
+        "vehicleId": "8ece0495-bef0-4eac-a58e-dede2bf975a3",
+        "hardwareId": "868446031763952",
+        "zoneId": "BERLIN",
+        "resolution": "CLAIMED",
+        "resolvedBy": "5VRiXTOvRWbWfAlIKDv10HrE8LJ2",
+        "resolvedAt": "2019-10-10T06:35:21.153Z",
+        "battery": 91,
+        "state": "ACTIVE",
+        "model": "AB",
+        "fleetbirdId": 118160,
+        "latitude": 52.506731,
+        "longitude": 13.289618
+      },
+      {
+        "id": "6348dfa0-1b20-40ed-98e9-fe9e232b6106",
+        "vehicleId": "8ece0495-bef0-4eac-a58e-dede2bf975a3",
+        "hardwareId": "868446031763952",
+        "zoneId": "BERLIN",
+        "resolution": "CLAIMED",
+        "resolvedBy": "5VRiXTOvRWbWfAlIKDv10HrE8LJ2",
+        "resolvedAt": "2019-10-10T06:35:21.153Z",
+        "battery": 91,
+        "state": "ACTIVE",
+        "model": "MOCK",
+        "fleetbirdId": 118160,
+        "latitude": 52.506731,
+        "longitude": 13.289618
+      }
+    ]
+  }
+}
