@@ -1,7 +1,6 @@
 package de.challenge.tiermobility.features.vehicle.ui
 
 import android.Manifest
-import android.location.Location
 import android.os.Bundle
 import android.view.View
 import androidx.activity.result.ActivityResultLauncher
@@ -9,7 +8,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
-import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -20,7 +18,6 @@ import com.google.android.gms.maps.model.MarkerOptions
 import dagger.hilt.android.AndroidEntryPoint
 import de.challenge.tiermobility.R
 import de.challenge.tiermobility.databinding.ActivityMapsBinding
-import de.challenge.tiermobility.features.vehicle.model.LocationStatus
 import de.challenge.tiermobility.features.vehicle.model.Vehicle
 import de.challenge.tiermobility.features.vehicle.model.VehicleMarker
 import de.challenge.tiermobility.features.vehicle.viewmodel.VehicleMapViewModel
@@ -66,14 +63,14 @@ class VehicleMapActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private fun checkForPermission() {
         if (PermissionUtils.hasLocationPermission(applicationContext)) {
-            getCurrentLocation()
+            viewModel.locationPermissionGranted = true
         } else if (!PermissionUtils.hasLocationPermission(applicationContext)
             && shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_COARSE_LOCATION)
         ) {
             // do not care about extra explanation, but still have chances to ask for permission
             requestLocationPermission()
         } else {
-            viewModel.updateLocationStatus(LocationStatus(false, null))
+            viewModel.locationPermissionGranted = false
         }
     }
 
@@ -85,11 +82,7 @@ class VehicleMapActivity : AppCompatActivity(), OnMapReadyCallback {
                 Manifest.permission.ACCESS_FINE_LOCATION,
                 false
             ) || permissions.getOrDefault(Manifest.permission.ACCESS_COARSE_LOCATION, false)
-            if (granted) {
-                getCurrentLocation()
-            } else {
-                viewModel.updateLocationStatus(LocationStatus(false, null))
-            }
+            viewModel.locationPermissionGranted = granted
         }
     }
 
@@ -100,26 +93,6 @@ class VehicleMapActivity : AppCompatActivity(), OnMapReadyCallback {
                 Manifest.permission.ACCESS_FINE_LOCATION
             )
         )
-    }
-
-    private fun getCurrentLocation() {
-        val fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-        try {
-            fusedLocationClient.lastLocation
-                .addOnSuccessListener { location: Location? ->
-                    viewModel.updateLocationStatus(LocationStatus(true, location))
-                }
-                .addOnCanceledListener {
-                    viewModel.updateLocationStatus(
-                        LocationStatus(
-                            true,
-                            null
-                        )
-                    )
-                }
-        } catch (e: SecurityException) {
-            viewModel.updateLocationStatus(LocationStatus(false, null))
-        }
     }
 
     private fun updateMap(data: List<VehicleMarker>?) {

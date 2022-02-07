@@ -1,8 +1,10 @@
 package de.challenge.tiermobility.features.vehicle.di
 
+import android.content.Context
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import de.challenge.api.model.NetworkingError
 import de.challenge.api.model.VehicleListResponseData
@@ -13,6 +15,8 @@ import de.challenge.api.network.VehicleServiceImpl
 import de.challenge.tiermobility.features.vehicle.model.*
 import de.challenge.tiermobility.features.vehicle.repository.DefaultVehicleMarkersRepo
 import de.challenge.tiermobility.features.vehicle.repository.VehicleMarkersRepo
+import de.challenge.tiermobility.location.repository.GoogleLocationRepository
+import de.challenge.tiermobility.location.repository.LocationRepository
 import javax.inject.Singleton
 
 @Module
@@ -34,6 +38,10 @@ class VehicleModule {
     @Provides
     @Singleton
     fun errorMapper() : Mapper<NetworkingError, ViewError> = ErrorMapper
+
+    @Provides
+    @Singleton
+    fun locationRepository(@ApplicationContext context : Context) : LocationRepository = GoogleLocationRepository(context.applicationContext)
 
     @Provides
     @Singleton
