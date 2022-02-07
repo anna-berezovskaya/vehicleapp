@@ -17,9 +17,13 @@ sealed class ApiResult<out T> {
             is Success -> Success(mapFunction(this.result))
         }
 
-    fun <O : Throwable> mapError(mapFunction: (Throwable) -> O): ApiResult<T> =
+    fun <OE : Throwable> mapError(mapFunction: (t: NetworkingError) -> OE): ApiResult<T> =
         when (this) {
-            is Failure -> Failure(mapFunction(this.error))
+            is Failure -> {
+                if (this.error is NetworkingError) Failure(mapFunction(this.error)) else Failure(
+                    this.error
+                )
+            }
             is Success -> this
         }
 

@@ -4,32 +4,29 @@ import android.content.Context
 import android.location.Location
 import com.google.android.gms.location.LocationServices
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import de.challenge.tiermobility.utils.CoroutineUtils
 
-class GoogleLocationRepository (@ApplicationContext context: Context) :
+class GoogleLocationRepository(@ApplicationContext context: Context) :
     LocationRepository {
-    private val _location: MutableStateFlow<Location?> = MutableStateFlow(null)
-    override val location: StateFlow<Location?> = _location
     private val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
 
 
     @Throws(SecurityException::class)
-    override fun requestLastLocation() {
+    override suspend fun requestLastLocation(): Location? = CoroutineUtils.awaitCallback {
         try {
             fusedLocationClient.lastLocation
                 .addOnSuccessListener { location: Location? ->
-                    _location.value = location
+                    it.onComplete(location)
                 }
                 .addOnCanceledListener {
-                    _location.value = null
+                    it.onComplete(null)
                 }
         } catch (e: SecurityException) {
+            it.onComplete(null)
         }
     }
 }
 
 interface LocationRepository {
-    val location: StateFlow<Location?>
-    fun requestLastLocation()
+    suspend fun requestLastLocation(): Location?
 }

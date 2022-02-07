@@ -20,7 +20,6 @@ import de.challenge.tiermobility.R
 import de.challenge.tiermobility.databinding.ActivityMapsBinding
 import de.challenge.tiermobility.features.vehicle.model.Vehicle
 import de.challenge.tiermobility.features.vehicle.model.VehicleMarker
-import de.challenge.tiermobility.features.vehicle.viewmodel.VehicleMapViewModel
 import de.challenge.tiermobility.ui.UiState
 import de.challenge.tiermobility.utils.PermissionUtils
 

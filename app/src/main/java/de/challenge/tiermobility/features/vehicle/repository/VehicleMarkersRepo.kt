@@ -16,8 +16,7 @@ class DefaultVehicleMarkersRepo @Inject constructor(
 ) : VehicleMarkersRepo {
 
     override suspend fun getVehicles(): ApiResult<List<VehicleMarker>> =
-        service.getVehicles().map { mapper.map(it) }
-
+        service.getVehicles().map { mapper.map(it) }.mapError { errorMapper.map(it) }
 }
 
 interface VehicleMarkersRepo {

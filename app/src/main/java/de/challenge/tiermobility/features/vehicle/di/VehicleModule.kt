@@ -15,6 +15,8 @@ import de.challenge.api.network.VehicleServiceImpl
 import de.challenge.tiermobility.features.vehicle.model.*
 import de.challenge.tiermobility.features.vehicle.repository.DefaultVehicleMarkersRepo
 import de.challenge.tiermobility.features.vehicle.repository.VehicleMarkersRepo
+import de.challenge.tiermobility.features.vehicle.utils.DefaultDistanceUseCase
+import de.challenge.tiermobility.features.vehicle.utils.DistanceUseCase
 import de.challenge.tiermobility.location.repository.GoogleLocationRepository
 import de.challenge.tiermobility.location.repository.LocationRepository
 import javax.inject.Singleton
@@ -33,11 +35,15 @@ class VehicleModule {
 
     @Provides
     @Singleton
-    fun vehicleListResponseDataMapper() : Mapper<VehicleListResponseData, List<VehicleMarker>> = VehicleListResponseDataMapper
+    fun provideVehicleListResponseDataMapper() : Mapper<VehicleListResponseData, List<VehicleMarker>> = VehicleListResponseDataMapper
 
     @Provides
     @Singleton
-    fun errorMapper() : Mapper<NetworkingError, ViewError> = ErrorMapper
+    fun provideErrorMapper() : Mapper<NetworkingError, ViewError> = ErrorMapper
+
+    @Provides
+    @Singleton
+    fun provideDistanceUseCase() : DistanceUseCase = DefaultDistanceUseCase()
 
     @Provides
     @Singleton
