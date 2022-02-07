@@ -166,6 +166,7 @@ class VehicleMapActivity : AppCompatActivity(), OnMapReadyCallback {
                         binding.bottomSheet.error.text = getString(R.string.no_location_permission)
                     }
                     is ViewError.ServerError -> {
+                        binding.bottomSheet.retry.visibility = View.VISIBLE
                         binding.bottomSheet.retry.setOnClickListener {
                             viewModel.loadData()
                         }
@@ -174,6 +175,7 @@ class VehicleMapActivity : AppCompatActivity(), OnMapReadyCallback {
                     }
 
                     is ViewError.NoInternet -> {
+                        binding.bottomSheet.retry.visibility = View.VISIBLE
                         binding.bottomSheet.retry.setOnClickListener {
                             viewModel.loadData()
                         }

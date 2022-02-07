@@ -68,10 +68,12 @@ class VehicleMapViewModel @Inject constructor(
                     }
                     is ApiResult.Success -> {
                         vehicleMarkers = result.result
+                        location?.let { updateDataWithLocation(it.location) }
                     }
                 }
+            } else {
+                location?.let { updateDataWithLocation(it.location) }
             }
-            location?.let { updateDataWithLocation(it.location) }
         }
     }
 

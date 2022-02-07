@@ -3,6 +3,7 @@ package de.challenge.tiermobility.features.vehicle.di
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.components.SingletonComponent
 import de.challenge.api.network.ResponseMapper
 import de.challenge.api.network.VehicleApi
