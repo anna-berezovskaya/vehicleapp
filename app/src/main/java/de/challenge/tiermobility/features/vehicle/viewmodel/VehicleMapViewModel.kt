@@ -26,6 +26,10 @@ class VehicleMapViewModel @Inject constructor(
     val uiState: StateFlow<UiState<List<VehicleMarker>>> = _uiState
 
     init {
+        /**
+         * data is only loaded on very start or when location permission
+         * is set/changed
+         */
         loadData()
     }
 
@@ -34,41 +38,40 @@ class VehicleMapViewModel @Inject constructor(
         private set
 
     /**
-     * if first run or first perimisson update, then load data
+     * if first run or first permisson update, then load data
      * if permission revoked show error
      * if location updated the sort the list
      */
     fun updateLocationStatus(locationStatus: LocationStatus) {
-        val oldStatus = location
         location = locationStatus
-        if (oldStatus == null || vehicleMarkers == null) {
-            loadData()
-        } else if (!locationStatus.locationGranted) {
+        if (!locationStatus.locationGranted) {
             _uiState.value = UiState.Error(ViewError.NoLocationPermission)
-        } else if (vehicleMarkers != null) {
-            updateDataWithLocation(location?.location)
+        } else {
+            loadData()
         }
     }
 
     fun loadData() {
         viewModelScope.launch {
-            _uiState.emit(UiState.Loading())
-            if (location?.locationGranted != true) {
-                _uiState.emit(UiState.Error(ViewError.NoLocationPermission))
-                return@launch
-            }
-            when (val result = getVehicleMarkersUseCase.run()) {
-                is ApiResult.Failure -> {
-                    when (val error = result.error) {
-                        is ViewError -> _uiState.emit(UiState.Error(error))
-                        else -> _uiState.emit(UiState.Error(ViewError.ServerError))
+            if (vehicleMarkers == null) {
+                _uiState.emit(UiState.Loading())
+                if (location?.locationGranted != true) {
+                    _uiState.emit(UiState.Error(ViewError.NoLocationPermission))
+                    return@launch
+                }
+                when (val result = getVehicleMarkersUseCase.run()) {
+                    is ApiResult.Failure -> {
+                        when (val error = result.error) {
+                            is ViewError -> _uiState.emit(UiState.Error(error))
+                            else -> _uiState.emit(UiState.Error(ViewError.ServerError))
+                        }
+                    }
+                    is ApiResult.Success -> {
+                        vehicleMarkers = result.result
                     }
                 }
-                is ApiResult.Success -> {
-                    vehicleMarkers = result.result
-                    location?.let { updateDataWithLocation(it.location) }
-                }
             }
+            location?.let { updateDataWithLocation(it.location) }
         }
     }
 
