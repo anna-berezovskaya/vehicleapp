@@ -5,9 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
-import de.challenge.api.model.ApiResult
 import de.challenge.tiermobility.features.vehicle.model.VehicleMarker
-import de.challenge.tiermobility.features.vehicle.model.ViewError
 import de.challenge.tiermobility.features.vehicle.repository.VehicleMarkersRepo
 import de.challenge.tiermobility.features.vehicle.utils.DistanceUseCase
 import de.challenge.tiermobility.location.repository.LocationRepository
@@ -29,6 +27,7 @@ class VehicleMapViewModel @Inject constructor(
 
     var vehicleMarkers: List<VehicleMarker>? = null
         private set
+
     var location: Location? = null
     var locationPermissionGranted = false
         set(value) {
@@ -57,18 +56,15 @@ class VehicleMapViewModel @Inject constructor(
                     return@launch
                 }
                 _uiState.emit(UiState.Loading())
-                when (val result = vehiclesRepo.getVehicles()) {
-                    is ApiResult.Failure -> {
-                        when (result.error) {
-                            is ViewError.NoInternet -> _uiState.emit(UiState.NoInternet())
-                            else -> _uiState.emit(UiState.ServerError())
-                        }
-                    }
-                    is ApiResult.Success -> {
-                        vehicleMarkers = result.result
-                        updateDataWithLocation()
-                    }
+
+                val result = vehiclesRepo.getVehicles()
+                _uiState.emit(result)
+
+                if (result is UiState.Data) {
+                    vehicleMarkers = result.data
+                    updateDataWithLocation()
                 }
+
             } else {
                 updateDataWithLocation()
             }

@@ -30,16 +30,11 @@ class VehicleModule {
     fun provideVehicleMarkerRepository(
         vehicleService: VehicleService,
         successMapper : Mapper<VehicleListResponseData, List<VehicleMarker>>,
-        errorMapper : Mapper<NetworkingError, ViewError>
-    ) : VehicleMarkersRepo = DefaultVehicleMarkersRepo(vehicleService, successMapper, errorMapper)
+    ) : VehicleMarkersRepo = DefaultVehicleMarkersRepo(vehicleService, successMapper)
 
     @Provides
     @Singleton
     fun provideVehicleListResponseDataMapper() : Mapper<VehicleListResponseData, List<VehicleMarker>> = VehicleListResponseDataMapper
-
-    @Provides
-    @Singleton
-    fun provideErrorMapper() : Mapper<NetworkingError, ViewError> = ErrorMapper
 
     @Provides
     @Singleton

@@ -1,10 +1,8 @@
 package de.challenge.tiermobility.finding.ui
 
 import android.location.Location
-import de.challenge.api.model.ApiResult
 import de.challenge.tiermobility.features.vehicle.model.Vehicle
 import de.challenge.tiermobility.features.vehicle.model.VehicleMarker
-import de.challenge.tiermobility.features.vehicle.model.ViewError
 import de.challenge.tiermobility.features.vehicle.repository.VehicleMarkersRepo
 import de.challenge.tiermobility.features.vehicle.ui.VehicleMapViewModel
 import de.challenge.tiermobility.features.vehicle.utils.DistanceUseCase
@@ -29,8 +27,8 @@ import org.junit.Test
 class VehicleMapViewModelTest {
 
     private val successResults:
-            ApiResult.Success<List<VehicleMarker>> =
-        ApiResult.Success(
+            UiState.Data<List<VehicleMarker>> =
+        UiState.Data(
             listOf(
                 VehicleMarker(
                     "id1",
@@ -82,7 +80,7 @@ class VehicleMapViewModelTest {
         vehicleMapViewModel.locationPermissionGranted = true
 
         assert(stateList[0] is UiState.Loading)
-        assert(stateList.contains(UiState.Data(successResults.result)))
+        assert(stateList.contains(successResults))
     }
 
     @Test
@@ -93,7 +91,7 @@ class VehicleMapViewModelTest {
         vehicleMapViewModel.locationPermissionGranted = true
 
         assert(stateList[0] is UiState.Loading)
-        assert(stateList.contains(UiState.Data(successResults.result)))
+        assert(stateList.contains(successResults))
     }
 
     @Test
@@ -104,30 +102,26 @@ class VehicleMapViewModelTest {
         vehicleMapViewModel.locationPermissionGranted = false
 
         assert(stateList.any { it is UiState.NoLocationPermission })
-        assertFalse(stateList.contains(UiState.Data(successResults.result)))
+        assertFalse(stateList.contains(successResults))
     }
 
 
     @Test
     fun shouldReturnErrorIfDataSourceReturnError() = runTest {
-        coEvery { getVehicleMarkersUseCaseMock.getVehicles() } returns (ApiResult.Failure(
-            Throwable(
-                "error"
-            )
-        ))
+        coEvery { getVehicleMarkersUseCaseMock.getVehicles() } returns (UiState.ServerError())
         coEvery { locationRepositoryMock.requestLastLocation() } returns null
 
         vehicleMapViewModel.locationPermissionGranted = true
 
         assert(stateList.any { it is UiState.Loading })
         assert(stateList.any { it is UiState.ServerError })
-        assertFalse(stateList.contains(UiState.Data(successResults.result)))
+        assertFalse(stateList.contains(successResults))
     }
 
     @Test
     fun shouldReturnNetworkingErrorIfNoInternet() = runTest {
         coEvery { getVehicleMarkersUseCaseMock.getVehicles() } returns
-                (ApiResult.Failure(ViewError.NoInternet))
+                (UiState.NoInternet())
         coEvery { locationRepositoryMock.requestLastLocation() } returns null
 
         vehicleMapViewModel.locationPermissionGranted = true
@@ -135,6 +129,6 @@ class VehicleMapViewModelTest {
         assert(stateList.any { it is UiState.Loading })
         assert(stateList.any { it is UiState.NoInternet })
         assertFalse(stateList.any { it is UiState.ServerError })
-        assertFalse(stateList.contains(UiState.Data(successResults.result)))
+        assertFalse(stateList.contains(successResults))
     }
 }

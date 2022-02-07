@@ -48,13 +48,3 @@ object VehicleMapper : Mapper<VehicleResponse, Vehicle?> {
     }
 
 }
-
-object ErrorMapper : Mapper<NetworkingError, ViewError> {
-    override fun map(i: NetworkingError): ViewError =
-        when (i) {
-            is NetworkingError.NetworkError -> ViewError.NoInternet
-            is NetworkingError.ServerError -> ViewError.SourceError
-            is NetworkingError.Unknown -> ViewError.SourceError
-
-        }
-}
