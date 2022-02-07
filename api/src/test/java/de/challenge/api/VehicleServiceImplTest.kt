@@ -1,7 +1,7 @@
 package de.challenge.api
 
 import de.challenge.api.model.*
-import de.challenge.api.network.NetworkResponseMapper
+import de.challenge.api.mappers.NetworkResponseMapper
 import de.challenge.api.network.VehicleApi
 import de.challenge.api.network.VehicleServiceImpl
 import de.challenge.api.utils.CoroutineTestRule
@@ -12,8 +12,6 @@ import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.*
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
-import org.junit.runner.notification.Failure
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 

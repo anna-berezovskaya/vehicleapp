@@ -1,4 +1,4 @@
-package de.challenge.api.network
+package de.challenge.api.mappers
 
 import de.challenge.api.model.ApiResult
 import de.challenge.api.model.NetworkingError

@@ -1,14 +1,13 @@
 package de.challenge.di
 
 import com.squareup.moshi.Moshi
-import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import dagger.multibindings.IntoSet
-import de.challenge.api.network.NetworkResponseMapper
-import de.challenge.api.network.ResponseMapper
+import de.challenge.api.mappers.NetworkResponseMapper
+import de.challenge.api.mappers.ResponseMapper
 import de.challenge.api.network.VehicleApi
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
