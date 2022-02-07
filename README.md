@@ -14,6 +14,10 @@ as for the purpose of simplicity in this coding challenge I have hardcoded Googl
 please read more about it below), project is ready to run immediately after being imported into
 Android Studio. No extra steps needed.
 
+Kotlin version: 1.5.32.  Project does not work with Kotlin 1.6.xx at the moment because of the 
+known Moshi issue. It can be updated later once compatible version of Moshi is available.
+https://github.com/square/moshi/issues/1368
+
 ### Tech Stack Used and reasoning
 
 #### MVVM

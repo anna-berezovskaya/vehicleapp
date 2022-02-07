@@ -2,7 +2,6 @@ package de.challenge.tiermobility.features.vehicle.utils
 
 import android.location.Location
 import com.google.android.gms.maps.model.LatLng
-import de.challenge.tiermobility.ui.toLocation
 
 class DefaultDistanceUseCase : DistanceUseCase {
     override fun getDistance(latLng: LatLng, location: Location) : Float =
@@ -12,4 +11,10 @@ class DefaultDistanceUseCase : DistanceUseCase {
 
 interface DistanceUseCase {
     fun getDistance(latLng: LatLng, location: Location) : Float
+}
+
+
+fun LatLng.toLocation() = Location("").apply {
+    latitude = latitude
+    longitude = longitude
 }
