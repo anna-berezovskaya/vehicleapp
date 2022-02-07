@@ -46,8 +46,8 @@ class VehicleMapActivity : AppCompatActivity(), OnMapReadyCallback {
         mapFragment.getMapAsync(this)
     }
 
-    override fun onResume() {
-        super.onResume()
+    override fun onStart() {
+        super.onStart()
         checkForPermission()
     }
 
@@ -63,14 +63,8 @@ class VehicleMapActivity : AppCompatActivity(), OnMapReadyCallback {
     private fun checkForPermission() {
         if (PermissionUtils.hasLocationPermission(applicationContext)) {
             viewModel.locationPermissionGranted = true
-        } else if (!PermissionUtils.hasLocationPermission(applicationContext)
-            && shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_COARSE_LOCATION)
-        ) {
-            // do not care about extra explanation, but still have chances to ask for permission
+        } else if (!PermissionUtils.hasLocationPermission(applicationContext))
             requestLocationPermission()
-        } else {
-            viewModel.locationPermissionGranted = false
-        }
     }
 
     private fun registerForLocationPermission() {
