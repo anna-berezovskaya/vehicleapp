@@ -103,7 +103,7 @@ class VehicleMapViewModelTest {
 
         vehicleMapViewModel.locationPermissionGranted = false
 
-        assert(stateList[0] is UiState.NoLocationPermission)
+        assert(stateList.any { it is UiState.NoLocationPermission })
         assertFalse(stateList.contains(UiState.Data(successResults.result)))
     }
 
