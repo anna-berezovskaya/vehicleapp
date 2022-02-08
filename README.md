@@ -10,13 +10,22 @@ concepts and this is the reason why I selected to setup the app as it is set.
 
 ### Installation and run
 
-as for the purpose of simplicity in this coding challenge I have hardcoded Google API key here (
-please read more about it below), project is ready to run immediately after being imported into
-Android Studio. No extra steps needed.
+UPD: At first I have submitted api key into the repository, because for the coding challenge 
+project that would simplify installation and I can delete key later. 
+However, next day after submission I realised, that I have key restricted to package name and SHA 
+generated from my debug.keystore. 
+As I am not really wanting to submit also my keystore (though the debug one), please follow this simple instructions:
+  - generate Google Maps API KEY for the package name 'de.challenge.tiermobility'
+  - in project root folder open local.properties file and add MAPS_API_KEY={API_KEY}, where {API_KEY} 
+is your api key
+  - That is it, you are free to run
 
-Kotlin version: 1.5.32.  Project does not work with Kotlin 1.6.xx at the moment because of the 
+Please refer to full instructions here: https://developers.google.com/maps/documentation/android-sdk/config
+
+Kotlin version: 1.5.32.  Project does not work with Kotlin 1.6.xx at the moment because of the
 known Moshi issue. It can be updated later once compatible version of Moshi is available.
 https://github.com/square/moshi/issues/1368
+
 
 ### Tech Stack Used and reasoning
 
