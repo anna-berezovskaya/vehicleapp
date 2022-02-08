@@ -48,15 +48,9 @@ DI
 
 ### What was left behind anf future improvements ##
 
-#### Hiding secrets
-
-Google strongly suggests that the Api key should not be submitted into the GitHub. However, to spare
-the reviewers and myself some effort, I did committed my Api key anyways. The Key is restricted to
-the application by package name and signature and to be used by Google Maps only, I will also delete
-it after the coding challenge review.
-
-The same goes for the 'secret-key' header, which should not be hardcoded, and can be stored in some
-more secure way
+#### Modularisation
+Feature modules could have been added, so the whole 'feature' package would go to separate module. 
+However that would require experimental Gradle plugin to work with Hilt well.
 
 #### Tests
 
